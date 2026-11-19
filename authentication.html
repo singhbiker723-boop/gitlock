@@ -1,1 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in | Your Institute</title>
+  <style>
+    :root { --ink:#16283a; --brand:#1f6f8b; --gold:#f0b429; --line:#c9d6de; --bad:#b3261e; --good:#1b7a43; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:1.25rem;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--ink);
+      background:linear-gradient(rgba(10,25,40,.75),rgba(10,25,40,.75)),url("institute.jpg") center/cover,var(--brand);
+      line-height:1.5; }
+    .card { width:100%; max-width:420px; background:#fff; border-radius:12px; padding:1.75rem; }
+    .brand { text-align:center; font-weight:800; font-size:1.2rem; margin-bottom:1rem; }
+    .brand a { color:var(--ink); text-decoration:none; }
+    .tabs { display:grid; grid-template-columns:1fr 1fr; border-bottom:2px solid var(--line); margin-bottom:1.25rem; }
+    .tabs button { background:none; border:0; padding:.7rem; font:inherit; font-weight:700; color:#6a7c87; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-2px; }
+    .tabs button[aria-selected="true"] { color:var(--brand); border-bottom-color:var(--brand); }
+    h1 { font-size:1.4rem; margin:0 0 .25rem; }
+    .sub { color:#52646f; margin:0 0 1.25rem; font-size:.95rem; }
+    label { display:block; font-weight:600; font-size:.95rem; margin-bottom:1rem; }
+    input[type=text], input[type=email], input[type=password] {
+      display:block; width:100%; margin-top:.3rem; padding:.7rem .8rem; font:inherit; font-weight:400;
+      border:1px solid var(--line); border-radius:6px; color:var(--ink); background:#fff; }
+    input[aria-invalid="true"] { border-color:var(--bad); }
+    :focus-visible { outline:3px solid var(--gold); outline-offset:2px; }
+    .pw { position:relative; }
+    .pw input { padding-right:4.5rem; }
+    .pw button { position:absolute; right:.4rem; top:50%; transform:translateY(-35%); background:none; border:0; color:var(--brand); font:inherit; font-size:.85rem; font-weight:700; cursor:pointer; padding:.4rem; }
+    .err { color:var(--bad); font-size:.85rem; font-weight:400; min-height:1.1em; margin-top:.25rem; }
+    .meter { height:6px; background:#e3eaee; border-radius:3px; margin-top:.5rem; overflow:hidden; }
+    .meter span { display:block; height:100%; width:0; transition:width .2s, background .2s; }
+    .hint { font-size:.8rem; color:#52646f; font-weight:400; margin-top:.25rem; }
+    .row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; font-size:.9rem; margin-bottom:1rem; }
+    .row label { margin:0; font-weight:400; display:flex; gap:.5rem; align-items:center; }
+    .check { display:flex; gap:.5rem; align-items:flex-start; font-weight:400; font-size:.9rem; }
+    a { color:var(--brand); }
+    .submit { width:100%; padding:.85rem; font:inherit; font-weight:700; color:#fff; background:var(--brand); border:0; border-radius:6px; cursor:pointer; display:block; text-align:center; text-decoration:none; }
+    .submit:hover { background:#185a72; }
+    .submit:disabled { opacity:.6; cursor:wait; }
+    .submit.ghost { background:#fff; color:var(--brand); border:2px solid var(--brand); margin-top:.75rem; }
+    .msg { margin-top:1rem; padding:.8rem 1rem; border-radius:6px; font-size:.92rem; display:none; }
+    .msg.ok { display:block; background:#e6f4ea; color:var(--good); }
+    .msg.bad { display:block; background:#fdecea; color:var(--bad); }
+    .msg.info { display:block; background:#eaf2f7; color:#1d4b61; }
+    .linkbtn { background:none; border:0; color:var(--brand); font:inherit; font-weight:700; text-decoration:underline; cursor:pointer; padding:0; margin-top:.75rem; display:none; }
+    .back { text-align:center; margin-top:1rem; font-size:.9rem; }
+    [hidden] { display:none !important; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand"><a href="index.html">Your Institute</a></div>
 
+    <div class="tabs" role="tablist" id="tabs" aria-label="Account">
+      <button type="button" role="tab" id="tab-login" aria-selected="true" aria-controls="panel-login">Login</button>
+      <button type="button" role="tab" id="tab-register" aria-selected="false" aria-controls="panel-register">Register</button>
+    </div>
+
+    <!-- LOGIN -->
+    <section id="panel-login" role="tabpanel" aria-labelledby="tab-login">
+      <h1>Welcome back</h1>
+      <p class="sub">Sign in to continue to your account.</p>
+      <form id="loginForm" novalidate>
+        <label>Email
+          <input type="email" name="email" autocomplete="email" required>
+          <div class="err" data-for="email"></div>
+        </label>
+        <label>Password
+          <div class="pw">
+            <input type="password" name="password" autocomplete="current-password" required>
+            <button type="button" class="toggle" aria-label="Show password">Show</button>
+          </div>
+          <div class="err" data-for="password"></div>
+        </label>
+        <div class="row">
+          <label><input type="checkbox" name="remember" checked> Remember me</label>
+          <a href="#" id="forgotLink">Forgot password?</a>
+        </div>
+        <button class="submit" type="submit">Login</button>
+      </form>
+    </section>
+
+    <!-- REGISTER -->
+    <section id="panel-register" role="tabpanel" aria-labelledby="tab-register" hidden>
+      <h1>Create account</h1>
+      <p class="sub">Register to enroll in courses.</p>
+      <form id="registerForm" novalidate>
+        <label>Full name
+          <input type="text" name="name" autocomplete="name" required>
+          <div class="err" data-for="name"></div>
+        </label>
+        <label>Email
+          <input type="email" name="email" autocomplete="email" required>
+          <div class="err" data-for="email"></div>
+        </label>
+        <label>Password
+          <div class="pw">
+            <input type="password" name="password" id="regPassword" autocomplete="new-password" required>
+            <button type="button" class="toggle" aria-label="Show password">Show</button>
+          </div>
+          <div class="meter" aria-hidden="true"><span id="meterBar"></span></div>
+          <div class="hint" id="meterText">Use 8+ characters with letters and numbers.</div>
+          <div class="err" data-for="password"></div>
+        </label>
+        <label>Confirm password
+          <input type="password" name="confirm" autocomplete="new-password" required>
+          <div class="err" data-for="confirm"></div>
+        </label>
+        <label class="check">
+          <input type="checkbox" name="terms" required>
+          <span>I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</span>
+        </label>
+        <div class="err" data-for="terms"></div>
+        <button class="submit" type="submit">Create account</button>
+      </form>
+    </section>
+
+    <!-- FORGOT PASSWORD -->
+    <section id="panel-forgot" hidden>
+      <h1>Reset password</h1>
+      <p class="sub">Enter your email and we will send a reset link.</p>
+      <form id="forgotForm" novalidate>
+        <label>Email
+          <input type="email" name="email" autocomplete="email" required>
+          <div class="err" data-for="email"></div>
+        </label>
+        <button class="submit" type="submit">Send reset link</button>
+      </form>
+      <p class="back"><a href="#" id="backLogin">Back to login</a></p>
+    </section>
+
+    <!-- SIGNED IN -->
+    <section id="panel-signedin" hidden>
+      <h1>You are signed in</h1>
+      <p class="sub" id="whoami"></p>
+      <a class="submit" href="enrollment.html">Go to enrollment</a>
+      <button class="submit ghost" type="button" id="logoutBtn">Sign out</button>
+    </section>
+
+    <div id="msg" class="msg" role="status" aria-live="polite"></div>
+    <button type="button" class="linkbtn" id="resendBtn">Resend verification email</button>
+    <p class="back"><a href="index.html">&larr; Back to home</a></p>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      sendPasswordResetEmail, sendEmailVerification, updateProfile, signOut,
+      onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyANwvc1U1RbbG8vSffhUmW5kY6XMtg9PCE",
+      authDomain: "hardeep-project.firebaseapp.com",
+      projectId: "hardeep-project",
+      appId: "1:1663927552:web:6455e1b27e3c7acf335fe5"
+    };
+    const AFTER_LOGIN = "enrollment.html";
+
+    const $ = (s, r = document) => r.querySelector(s);
+    const msg = $("#msg"), resendBtn = $("#resendBtn");
+    const panels = { login: $("#panel-login"), register: $("#panel-register"), forgot: $("#panel-forgot"), signedin: $("#panel-signedin") };
+    const tabs = { login: $("#tab-login"), register: $("#tab-register") };
+
+    const auth = getAuth(initializeApp(firebaseConfig));
+
+    function notify(type, text) { msg.className = "msg " + type; msg.textContent = text; }
+    function clearMsg() { msg.className = "msg"; msg.textContent = ""; resendBtn.style.display = "none"; }
+    function show(name) {
+      Object.keys(panels).forEach(k => panels[k].hidden = k !== name);
+      $("#tabs").hidden = (name === "forgot" || name === "signedin");
+      Object.keys(tabs).forEach(k => tabs[k].setAttribute("aria-selected", String(k === name)));
+      clearMsg();
+    }
+    tabs.login.onclick = () => show("login");
+    tabs.register.onclick = () => show("register");
+    $("#forgotLink").onclick = e => { e.preventDefault(); show("forgot"); };
+    $("#backLogin").onclick = e => { e.preventDefault(); show("login"); };
+
+    /* Show / hide password */
+    document.querySelectorAll(".toggle").forEach(btn => {
+      btn.onclick = () => {
+        const input = btn.parentElement.querySelector("input");
+        const hide = input.type === "text";
+        input.type = hide ? "password" : "text";
+        btn.textContent = hide ? "Show" : "Hide";
+        btn.setAttribute("aria-label", hide ? "Show password" : "Hide password");
+      };
+    });
+
+    /* Password strength meter */
+    function strength(p) {
+      let s = 0;
+      if (p.length >= 8) s++;
+      if (p.length >= 12) s++;
+      if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++;
+      if (/\d/.test(p)) s++;
+      if (/[^A-Za-z0-9]/.test(p)) s++;
+      return Math.min(s, 4);
+    }
+    $("#regPassword").addEventListener("input", e => {
+      const levels = [["0%", "#ccc", ""], ["25%", "#b3261e", "Weak"], ["50%", "#e08a00", "Fair"], ["75%", "#8aa51f", "Good"], ["100%", "#1b7a43", "Strong"]];
+      const l = levels[strength(e.target.value)];
+      $("#meterBar").style.width = l[0];
+      $("#meterBar").style.background = l[1];
+      $("#meterText").textContent = l[2] ? "Password strength: " + l[2] : "Use 8+ characters with letters and numbers.";
+    });
+
+    /* Validation helpers */
+    const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    function setErr(form, field, text) {
+      const el = form.querySelector('[data-for="' + field + '"]');
+      const input = form.elements[field];
+      if (el) el.textContent = text || "";
+      if (input && input.type !== "checkbox") input.setAttribute("aria-invalid", text ? "true" : "false");
+    }
+    function clearErrs(form) { form.querySelectorAll(".err").forEach(e => e.textContent = ""); }
+
+    function friendly(err) {
+      switch (err && err.code) {
+        case "auth/invalid-credential":
+        case "auth/wrong-password":
+        case "auth/user-not-found": return "Incorrect email or password.";
+        case "auth/email-already-in-use": return "An account with this email already exists. Try logging in.";
+        case "auth/weak-password": return "Password is too weak. Use at least 8 characters.";
+        case "auth/invalid-email": return "Enter a valid email address.";
+        case "auth/too-many-requests": return "Too many attempts. Please wait a few minutes and try again.";
+        case "auth/network-request-failed": return "Network problem. Check your connection and try again.";
+        case "auth/user-disabled": return "This account has been disabled.";
+        case "auth/operation-not-allowed": return "Email/Password login is not enabled in Firebase yet.";
+        case "auth/unauthorized-domain": return "This website address is not authorized in Firebase. Add it under Authentication, Settings, Authorized domains.";
+        default: return "Something went wrong. Please try again.";
+      }
+    }
+    async function run(btn, fn) {
+      btn.disabled = true;
+      try { await fn(); } catch (err) { notify("bad", friendly(err)); }
+      finally { btn.disabled = false; }
+    }
+
+    /* LOGIN */
+    $("#loginForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const f = e.target; clearErrs(f); clearMsg();
+      const email = f.email.value.trim(), password = f.password.value;
+      let bad = false;
+      if (!emailOk(email)) { setErr(f, "email", "Enter a valid email address."); bad = true; } else setErr(f, "email", "");
+      if (!password) { setErr(f, "password", "Enter your password."); bad = true; } else setErr(f, "password", "");
+      if (bad) return;
+      run(f.querySelector(".submit"), async () => {
+        await setPersistence(auth, f.remember.checked ? browserLocalPersistence : browserSessionPersistence);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        if (!cred.user.emailVerified) {
+          notify("bad", "Please verify your email first. Check your inbox (and spam folder) for the link.");
+          resendBtn.style.display = "inline";
+          return;
+        }
+        notify("ok", "Login successful. Redirecting...");
+        setTimeout(() => location.href = AFTER_LOGIN, 600);
+      });
+    });
+
+    /* Resend verification */
+    resendBtn.onclick = () => run(resendBtn, async () => {
+      if (!auth.currentUser) { notify("bad", "Please log in again to resend the email."); return; }
+      await sendEmailVerification(auth.currentUser);
+      notify("ok", "Verification email sent again. Check your inbox.");
+    });
+
+    /* REGISTER */
+    $("#registerForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const f = e.target; clearErrs(f); clearMsg();
+      const name = f.name.value.trim(), email = f.email.value.trim(), pw = f.password.value;
+      let bad = false;
+      const check = (field, cond, text) => { if (cond) { setErr(f, field, text); bad = true; } else setErr(f, field, ""); };
+      check("name", name.length < 2, "Enter your full name.");
+      check("email", !emailOk(email), "Enter a valid email address.");
+      check("password", pw.length < 8 || !/[A-Za-z]/.test(pw) || !/\d/.test(pw), "Use 8+ characters with letters and numbers.");
+      check("confirm", f.confirm.value !== pw, "Passwords do not match.");
+      check("terms", !f.terms.checked, "Please accept the terms to continue.");
+      if (bad) return;
+      run(f.querySelector(".submit"), async () => {
+        const cred = await createUserWithEmailAndPassword(auth, email, pw);
+        await updateProfile(cred.user, { displayName: name });
+        await sendEmailVerification(cred.user);
+        await signOut(auth);
+        f.reset();
+        show("login");
+        notify("ok", "Account created. We sent a verification link to " + email + ". Verify your email, then log in.");
+      });
+    });
+
+    /* FORGOT PASSWORD */
+    $("#forgotForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const f = e.target; clearErrs(f); clearMsg();
+      const email = f.email.value.trim();
+      if (!emailOk(email)) { setErr(f, "email", "Enter a valid email address."); return; }
+      setErr(f, "email", "");
+      run(f.querySelector(".submit"), async () => {
+        try { await sendPasswordResetEmail(auth, email); }
+        catch (err) { if (err.code !== "auth/user-not-found") throw err; }
+        notify("ok", "If that email is registered, a reset link has been sent.");
+      });
+    });
+
+    /* SIGN OUT + already-signed-in view */
+    $("#logoutBtn").onclick = () => run($("#logoutBtn"), async () => {
+      await signOut(auth);
+      show("login");
+      notify("ok", "You have been signed out.");
+    });
+    onAuthStateChanged(auth, user => {
+      if (user && user.emailVerified) {
+        $("#whoami").textContent = (user.displayName || "Student") + " (" + user.email + ")";
+        show("signedin");
+      }
+    });
+  </script>
+</body>
+</html>
